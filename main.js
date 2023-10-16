@@ -1,68 +1,52 @@
 class ProductManager {
-    constructor(){
-    this.products = [];
+    constructor() {
+        this.products = [];
+        this.idCounter = 0;
     }
 
-    static id = 0;
-
-    addProducts(title, description, price, image, code, stock) {
-        for(let i = 0; i < this.products.length;i++){
-            if(this.products[i].code === code){
-                console.log(`El codigo ${code} esta repetido`);
-                break;
-            }
+    addProduct(title, description, price, thumbnail, code, stock) {
+        if (!title || !description || !price || !thumbnail || !code || stock === undefined) {
+            console.log("Todos los campos del producto son requeridos.");
+            return;
         }
 
-        const newProduct ={
-            title,
-            description, 
-            price, 
-            image, 
-            code, 
-            stock,
+        if (this.products.some(product => product.code === code)) {
+            console.log(`El código ${code} ya existe.`);
+            return;
         }
 
-        if (!Object.values(newProduct).includes(undefined)){
-        ProductManager.id++;
+        this.idCounter++;
         this.products.push({
-            ...newProduct,
-            id:ProductManager.id,
+            id: this.idCounter,
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock,
         });
-        }else{
-            console.log("Todos los productos son requeridos");
-        }
+        console.log("Producto agregado con éxito.");
     }
 
-    getProduct(){
+    getProducts() {
         return this.products;
     }
 
-    existe (id) {
-        return this.products.find((producto ) => producto.id === id);
-    }
-
-    getProductById(id){
-        !this.existe(id) ? console.log("Not Found") : console.log(this.existe(id)); 
+    getProductById(id) {
+        const product = this.products.find(product => product.id === id);
+        if (product) {
+            console.log(product);
+        } else {
+            console.log("Producto no encontrado.");
+        }
     }
 }
 
-const productos = new ProductManager();
+const productManager = new ProductManager();
 
-//Primera llamada = arreglo vacio
-console.log(productos.getProduct());
-
-//Agregamos producto
-productos.addProducts('titulo1', 'descripcion1', '2000', "imagen1", "abc123", 5);
-productos.addProducts('titulo2', 'descripcion2', '2000', "imagen2", "abc124");
-
-//Segunda llamada = arreglo con producto
-console.log(productos.getProduct());
-
-//Validacion de CODE repetido
-productos.addProducts('titulo3', 'descripcion3', '2000', "imagen3", "abc124", 7);
-
-//Busqueda de producto por ID 
-productos.getProductById(2);
-
-//Busqueda por producto no encontrado
-productos.getProductById(3);
+productManager.addProduct('Producto 1', 'Descripción 1', 100, 'imagen1.jpg', 'ABC123', 10);
+productManager.addProduct('Producto 2', 'Descripción 2', 150, 'imagen2.jpg', 'ABC124', 5);
+productManager.addProduct('Producto 3', 'Descripción 3', 200, 'imagen3.jpg', 'ABC123', 8); // Código repetido
+console.log(productManager.getProducts());
+productManager.getProductById(2);
+productManager.getProductById(4); // No encontrado
